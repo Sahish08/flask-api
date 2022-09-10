@@ -1,3 +1,4 @@
+#import required libraries
 import io
 import numpy as np
 from PIL import Image
@@ -7,6 +8,7 @@ import torchvision
 from torchvision.transforms.functional import InterpolationMode
 from torchvision import transforms
 
+#Pytorch model
 model = torchvision.models.regnet_y_32gf()
 
 weights = torch.load('Data/model.pth', map_location=torch.device('cpu'))['model']
@@ -16,6 +18,7 @@ torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
 model.eval()
 
+#converting image into a tensor 
 def prepare_image(img):
     crop_size = 224
     resize_size = 256
@@ -34,7 +37,7 @@ def prepare_image(img):
     img = transforms_val(img).reshape((1, 3, 224, 224))
     return img
 
-
+#classifying insect 
 def predict_result(img):
     model.eval()
     device = torch.device('cpu')
@@ -55,7 +58,7 @@ def predict_result(img):
 
 app = Flask(__name__)
 
-
+#returns JSON of prediction given an image 
 @app.route('/predict', methods=['POST'])
 def infer_image():
     if 'file' not in request.files:
